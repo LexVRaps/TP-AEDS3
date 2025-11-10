@@ -83,7 +83,6 @@ public class MenuHorarios {
         LocalTime horaPartida = LocalTime.parse(horaPartidaStr, timeFormatter);
         LocalTime horaChegada = LocalTime.parse(horaChegadaStr, timeFormatter);
         
-        // CORREÇÃO: Usar o construtor correto sem rota_id
         Horario horario = new Horario(horaPartida, horaChegada);
         int id = arqHorarios.create(horario);
         System.out.println("Horário criado com ID: " + id);

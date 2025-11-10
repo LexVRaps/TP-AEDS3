@@ -34,7 +34,6 @@ public class Usuario implements Registro {
         this.passagensIds = passagensIds != null ? passagensIds : new ArrayList<>();
     }
 
-    // Getters e Setters
     public int getID() { return ID; }
     public void setID(int id) { this.ID = id; }
     public String getNome() { return nome; }
@@ -87,7 +86,6 @@ public class Usuario implements Registro {
             this.email = dis.readUTF();
             this.senha = dis.readUTF();
             
-            // NOVO: Ler a lista de passagens
             int tamanhoLista = dis.readInt();
             this.passagensIds = new ArrayList<>();
             for (int i = 0; i < tamanhoLista; i++) {

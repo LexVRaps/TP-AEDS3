@@ -14,15 +14,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import arquivos.ArquivoAssentos; // ADICIONAR este import
-
+import arquivos.ArquivoAssentos; 
 public class MenuPassagens {
 
     private ArquivoPassagens arqPassagens;
     private ArquivoUsuarios arqUsuarios;
     private ArquivoRotas arqRotas;
     private ArquivoHorarios arqHorarios;
-    private ArquivoAssentos arqAssentos; // NOVO: Adicionar ArquivoAssentos
+    private ArquivoAssentos arqAssentos; 
     private static Scanner console = new Scanner(System.in);
     private static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -31,7 +30,7 @@ public class MenuPassagens {
         arqUsuarios = new ArquivoUsuarios();
         arqRotas = new ArquivoRotas();
         arqHorarios = new ArquivoHorarios();
-        arqAssentos = new ArquivoAssentos(); // NOVO: Inicializar ArquivoAssentos
+        arqAssentos = new ArquivoAssentos(); 
     }
 
    public void menu() {
@@ -50,9 +49,9 @@ public class MenuPassagens {
         System.out.println("8 - Buscar por Preço");
         System.out.println("9 - Alterar");
         System.out.println("10 - Excluir");
-        System.out.println("11 - Associar Passagem a Usuário"); // NOVO
-        System.out.println("12 - Desassociar Passagem de Usuário"); // NOVO
-        System.out.println("13 - Listar Passagens do Usuário"); // NOVO
+        System.out.println("11 - Associar Passagem a Usuário"); 
+        System.out.println("12 - Desassociar Passagem de Usuário"); 
+        System.out.println("13 - Listar Passagens do Usuário"); 
         System.out.println("0 - Voltar");
         System.out.print("Opção: ");
 
@@ -94,13 +93,13 @@ public class MenuPassagens {
                 excluir();
                 break;
             case 11:
-                associarPassagemAUsuario(); // NOVO
+                associarPassagemAUsuario(); 
                 break;
             case 12:
-                desassociarPassagemDeUsuario(); // NOVO
+                desassociarPassagemDeUsuario(); 
                 break;
             case 13:
-                listarPassagensDoUsuario(); // NOVO
+                listarPassagensDoUsuario(); 
                 break;
             case 0:
                 break;
@@ -113,7 +112,6 @@ public class MenuPassagens {
     public void incluir() {
     System.out.println("\nInclusão de Passagem");
     
-    // Solicitar ID do usuário
     System.out.print("ID do Usuário: ");
     int usuarioId = Integer.parseInt(console.nextLine());
     
@@ -155,7 +153,6 @@ public class MenuPassagens {
         }
         int horarioId = horario.getID();
         
-        // CORRIGIDO: usar arqAssentos em vez de criar novo
         Assento assento = arqAssentos.readByNumeroAssento(numeroAssento);
         if (assento == null) {
             System.out.println("Erro: Assento '" + numeroAssento + "' não encontrado!");
@@ -164,7 +161,6 @@ public class MenuPassagens {
         }
         int assentoId = assento.getID();
         
-        // Criar passagem com todos os IDs, incluindo usuarioId
         Passagem passagem = new Passagem(dataViagem, preco, rotaId, horarioId, assentoId, usuarioId);
         int id = arqPassagens.create(passagem, rotaId, horarioId, assentoId, usuarioId);
         System.out.println("Passagem criada com ID: " + id);
@@ -285,7 +281,7 @@ public class MenuPassagens {
             int rotaIdAntigo = passagem.getRotaId();
             int horarioIdAntigo = passagem.getHorarioId();
             int assentoIdAntigo = passagem.getAssentoId();
-            int usuarioIdAntigo = passagem.getUsuarioId(); // NOVO
+            int usuarioIdAntigo = passagem.getUsuarioId();
             
             System.out.print("Nova data (dd/MM/yyyy) (Enter para manter): ");
             String dataStr = console.nextLine();
@@ -320,7 +316,7 @@ public class MenuPassagens {
                 passagem.setAssentoId(assentoIdNovo);
             }
 
-            System.out.print("Novo ID do Usuário (Enter para manter): "); // NOVO
+            System.out.print("Novo ID do Usuário (Enter para manter): "); 
             String usuarioStr = console.nextLine();
             int usuarioIdNovo = usuarioStr.isEmpty() ? usuarioIdAntigo : Integer.parseInt(usuarioStr);
             if (!usuarioStr.isEmpty()) {
@@ -370,11 +366,9 @@ public class MenuPassagens {
     public void associarPassagemAUsuario() {
     System.out.println("\nASSOCIAR PASSAGEM A USUÁRIO");
     
-    // Buscar usuário por nome
     System.out.print("Nome do Usuário: ");
     String nomeUsuario = console.nextLine();
     
-    // Buscar passagem por informações descritivas
     System.out.print("Origem da Passagem: ");
     String origem = console.nextLine();
     System.out.print("Destino da Passagem: ");
@@ -383,21 +377,18 @@ public class MenuPassagens {
     String dataStr = console.nextLine();
 
     try {
-        // Buscar usuário
         Usuario usuario = arqUsuarios.readByNome(nomeUsuario);
         if (usuario == null) {
             System.out.println("Usuário não encontrado!");
             return;
         }
 
-        // Buscar rota
         Rota rota = arqRotas.readByOrigemDestino(origem, destino);
         if (rota == null) {
             System.out.println("Rota não encontrada!");
             return;
         }
 
-        // Buscar passagem pela rota e data
         LocalDate dataViagem = LocalDate.parse(dataStr, dateFormatter);
         ArrayList<Passagem> passagens = arqPassagens.readByRota(rota.getID());
         Passagem passagemEncontrada = null;
@@ -414,16 +405,13 @@ public class MenuPassagens {
             return;
         }
 
-        // Verificar se a passagem já está associada a outro usuário
         if (passagemEncontrada.getUsuarioId() != -1 && passagemEncontrada.getUsuarioId() != usuario.getID()) {
             System.out.println("Esta passagem já está associada a outro usuário!");
             return;
         }
 
-        // Atualizar a passagem com o ID do usuário
         passagemEncontrada.setUsuarioId(usuario.getID());
         if (arqPassagens.update(passagemEncontrada)) {
-            // Adicionar a passagem à lista do usuário
             usuario.adicionarPassagem(passagemEncontrada.getID());
             if (arqUsuarios.update(usuario)) {
                 System.out.println("Passagem associada ao usuário com sucesso!");
